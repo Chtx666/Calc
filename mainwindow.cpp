@@ -43,20 +43,15 @@ void MainWindow::on_rightButton_clicked()
     ui->lineEdit->setText(expression);
 }
 
-double evaluateExpression(const string& expression) {
-    stack<double> values;        // 存储操作数
-    stack<char> operators;       // 存储运算符
+double evaluateExpression(const string& expr) {
+    stack<double> values;
+    stack<char> ops;
 
-    // 运算符优先级
-    unordered_map<char, int> precedence = {
-        {'+', 1},
-        {'-', 1},
-        {'*', 2},
-        {'/', 2}
+    unordered_map<char, int> prec = {
+        {'+', 1}, {'-', 1}, {'*', 2}, {'/', 2}
     };
 
-    // 运算符计算
-    auto applyOperator = [](double a, double b, char op) -> double {
+    auto apply = [](double a, double b, char op) -> double {
         switch (op) {
         case '+': return a + b;
         case '-': return a - b;
@@ -64,88 +59,109 @@ double evaluateExpression(const string& expression) {
         case '/':
             if (b == 0) throw invalid_argument("Division by zero");
             return a / b;
-        default: throw invalid_argument("Unknown operator");
         }
+        throw invalid_argument("Unknown operator");
     };
 
-    bool lastWasOperatorOrLeftParen = true; // 记录上一个字符是否是运算符或左括号
+    // 上一个 token 的类型
+    // true  = 可以接一元负号（表达式开头、(、运算符后）
+    // false = 只能接二元运算符
+    bool expectUnary = true;
 
-    for (int i = 0; i < expression.length(); ++i) {
-        char c = expression[i];
+    for (size_t i = 0; i < expr.size(); ++i) {
+        char c = expr[i];
 
-        if (isspace(c)) continue; // 忽略空格
+        if (isspace(c)) continue;
 
-        if (isdigit(c) || c == '.') { // 处理数字和小数点
-            double num = 0;
-            double fraction = 0;
-            int fracDiv = 1;
-            bool isFraction = false;
+        /* ---------- 处理数字（含小数） ---------- */
+        if (isdigit(c) || c == '.') {
+            double num = 0, frac = 0, div = 1;
+            bool dot = false;
 
-            while (i < expression.length() && (isdigit(expression[i]) || expression[i] == '.')) {
-                if (expression[i] == '.') {
-                    if (isFraction) throw invalid_argument("Invalid number format: multiple decimal points"); // 避免多次小数点
-                    isFraction = true;
+            while (i < expr.size() && (isdigit(expr[i]) || expr[i] == '.')) {
+                if (expr[i] == '.') {
+                    if (dot) throw invalid_argument("Invalid number format");
+                    dot = true;
                 } else {
-                    if (!isFraction) {
-                        num = num * 10 + (expression[i] - '0');
-                    } else {
-                        fraction = fraction * 10 + (expression[i] - '0');
-                        fracDiv *= 10;
+                    if (!dot) num = num * 10 + (expr[i] - '0');
+                    else {
+                        frac = frac * 10 + (expr[i] - '0');
+                        div *= 10;
                     }
                 }
                 i++;
             }
-            i--; // 回退一个位置，因为while会继续递增i
-            num += fraction / fracDiv;
-            values.push(num);
-
-            lastWasOperatorOrLeftParen = false; // 数字之后不能接运算符
+            i--;
+            values.push(num + frac / div);
+            expectUnary = false;
         }
+
+        /* ---------- 左括号 ---------- */
         else if (c == '(') {
-            operators.push(c);
-            lastWasOperatorOrLeftParen = true; // 左括号后可以接数字或左括号
+            ops.push(c);
+            expectUnary = true;
         }
+
+        /* ---------- 右括号 ---------- */
         else if (c == ')') {
-            while (!operators.empty() && operators.top() != '(') {
-                double val2 = values.top(); values.pop();
-                double val1 = values.top(); values.pop();
-                char op = operators.top(); operators.pop();
-                values.push(applyOperator(val1, val2, op));
+            while (!ops.empty() && ops.top() != '(') {
+                double b = values.top(); values.pop();
+                double a = values.top(); values.pop();
+                char op = ops.top(); ops.pop();
+                values.push(apply(a, b, op));
             }
-            if (operators.empty()) throw invalid_argument("Mismatched parentheses: no matching '(' for ')'");
-            operators.pop(); // 弹出 '('
-            lastWasOperatorOrLeftParen = false; // 右括号后必须接运算符
+            if (ops.empty()) throw invalid_argument("Mismatched parentheses");
+            ops.pop(); // pop '('
+            expectUnary = false;
         }
-        else if (precedence.find(c) != precedence.end()) { // 运算符 + - * /
-            if (lastWasOperatorOrLeftParen) throw invalid_argument("Invalid syntax: operator cannot follow another operator or left parenthesis");
 
-            while (!operators.empty() && precedence[operators.top()] >= precedence[c]) {
-                double val2 = values.top(); values.pop();
-                double val1 = values.top(); values.pop();
-                char op = operators.top(); operators.pop();
-                values.push(applyOperator(val1, val2, op));
+        /* ---------- 运算符 ---------- */
+        else if (prec.count(c)) {
+
+            // 处理一元负号
+            if (c == '-' && expectUnary) {
+                values.push(0); // 转换为 0 - x
+            } else if (expectUnary) {
+                throw invalid_argument("Invalid operator sequence");
             }
-            operators.push(c);
-            lastWasOperatorOrLeftParen = true; // 运算符后面可以接数字或左括号
-        } else {
-            throw invalid_argument(string("Invalid character: ") + c); // 非法字符
+
+            while (!ops.empty() && ops.top() != '(' &&
+                   prec[ops.top()] >= prec[c]) {
+                double b = values.top(); values.pop();
+                double a = values.top(); values.pop();
+                char op = ops.top(); ops.pop();
+                values.push(apply(a, b, op));
+            }
+
+            ops.push(c);
+            expectUnary = true;
+        }
+
+        /* ---------- 非法字符 ---------- */
+        else {
+            throw invalid_argument(string("Invalid character: ") + c);
         }
     }
 
-    while (!operators.empty()) {
-        double val2 = values.top(); values.pop();
-        double val1 = values.top(); values.pop();
-        char op = operators.top(); operators.pop();
-        values.push(applyOperator(val1, val2, op));
+    /* ---------- 计算剩余运算 ---------- */
+    while (!ops.empty()) {
+        if (ops.top() == '(') throw invalid_argument("Mismatched parentheses");
+        double b = values.top(); values.pop();
+        double a = values.top(); values.pop();
+        char op = ops.top(); ops.pop();
+        values.push(apply(a, b, op));
     }
 
-    if (operators.empty()) return values.top();  // 最后栈中只有一个值，就是结果
+    if (values.size() != 1)
+        throw invalid_argument("Invalid expression");
 
-    throw invalid_argument("Invalid expression: unbalanced operators or operands");
+    return values.top();
 }
+
 
 void MainWindow::on_equalButton_clicked()
 {
+    expression = ui->lineEdit->text();
     if (expression == "\0") return;
     try {
         expression = QString::number(evaluateExpression(expression.toStdString()));

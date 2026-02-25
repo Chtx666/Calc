@@ -65,6 +65,8 @@ private slots:
 
     void on_delButton_clicked();
 
+    void on_dotButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     QString expression;

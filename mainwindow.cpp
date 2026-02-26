@@ -13,6 +13,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->secSpinBox->setRange(0, 59);  // 最小0，最大59
     timer = new QTimer;
     connect(timer, &QTimer::timeout, this, &MainWindow::timeoutSlot);
+    ui->minSpinBox->setMinimumWidth(145);
+    ui->secSpinBox->setMinimumWidth(145);
 }
 
 MainWindow::~MainWindow()

@@ -9,6 +9,10 @@ MainWindow::MainWindow(QWidget *parent)
     this->setMaximumSize(490, 460);
     this->setMinimumSize(490, 460);
     this->setWindowTitle("Calculator");
+    ui->minSpinBox->setRange(0, 59);  // 最小0，最大59
+    ui->secSpinBox->setRange(0, 59);  // 最小0，最大59
+    timer = new QTimer;
+    connect(timer, &QTimer::timeout, this, &MainWindow::timeoutSlot);
 }
 
 MainWindow::~MainWindow()
@@ -275,5 +279,42 @@ void MainWindow::on_dotButton_clicked()
 {
     expression += ".";
     ui->lineEdit->setText(expression);
+}
+
+void MainWindow::on_startButton_clicked()
+{
+    int min = ui->minSpinBox->value();
+    int sec = ui->secSpinBox->value();
+    timer->start(1000);
+    ui->minSpinBox->setValue(min);
+    ui->secSpinBox->setValue(sec);
+    ui->startButton->setText("Continue");
+}
+
+void MainWindow::timeoutSlot()
+{
+    int min = ui->minSpinBox->value();
+    int sec = ui->secSpinBox->value();
+    if (min == 0 && sec == 0)
+    {
+        QMessageBox::information(this, "Man", "Manba out!");
+        timer->stop();
+        ui->startButton->setText("Start");
+    }
+    else if (sec > 0) sec--;
+    else
+    {
+        min--;
+        sec += 60;
+        sec--;
+    }
+    ui->minSpinBox->setValue(min);
+    ui->secSpinBox->setValue(sec);
+}
+
+
+void MainWindow::on_pauseButton_clicked()
+{
+    timer->stop();
 }
 

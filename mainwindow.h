@@ -10,6 +10,8 @@
 #include <string>
 #include <unordered_map>
 #include <stdexcept>
+#include <QTimer>
+#include <QMessageBox>
 using namespace std;
 
 QT_BEGIN_NAMESPACE
@@ -67,8 +69,15 @@ private slots:
 
     void on_dotButton_clicked();
 
+    void on_startButton_clicked();
+
+    void timeoutSlot();
+
+    void on_pauseButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     QString expression;
+    QTimer *timer;
 };
 #endif // MAINWINDOW_H

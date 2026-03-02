@@ -12,6 +12,8 @@
 #include <stdexcept>
 #include <QTimer>
 #include <QMessageBox>
+#include <QMenuBar>
+#include <QFileDialog>
 using namespace std;
 
 QT_BEGIN_NAMESPACE
@@ -74,6 +76,12 @@ private slots:
     void timeoutSlot();
 
     void on_pauseButton_clicked();
+
+    void on_tabWidget_currentChanged(int index);
+
+    void dealNewAction();
+
+    void dealOpenAction();
 
 private:
     Ui::MainWindow *ui;

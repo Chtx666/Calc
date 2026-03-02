@@ -9,12 +9,13 @@ MainWindow::MainWindow(QWidget *parent)
     this->setMaximumSize(490, 460);
     this->setMinimumSize(490, 460);
     this->setWindowTitle("Calculator");
-    ui->minSpinBox->setRange(0, 59);  // 最小0，最大59
-    ui->secSpinBox->setRange(0, 59);  // 最小0，最大59
+    ui->minSpinBox->setRange(0, 59);
+    ui->secSpinBox->setRange(0, 59);
     timer = new QTimer;
     connect(timer, &QTimer::timeout, this, &MainWindow::timeoutSlot);
     ui->minSpinBox->setMinimumWidth(145);
     ui->secSpinBox->setMinimumWidth(145);
+    on_tabWidget_currentChanged(2);
 }
 
 MainWindow::~MainWindow()
@@ -320,3 +321,32 @@ void MainWindow::on_pauseButton_clicked()
     timer->stop();
 }
 
+void MainWindow::dealNewAction()
+{
+
+}
+
+void MainWindow::dealOpenAction()
+{
+    QString filename = QFileDialog::getOpenFileName(this, tr("Open File"), QCoreApplication::applicationFilePath(), "*.*");
+    if (filename.isEmpty()) QMessageBox::warning(this, "Warning", "Please select a file!!!");
+    else
+    {
+        QFile file(filename);
+        file.open(QIODevice::ReadOnly);
+        QByteArray ba = file.readAll();
+        ui->textEdit->setText(QString(ba));
+        file.close();
+    }
+}
+
+void MainWindow::on_tabWidget_currentChanged(int index)
+{
+    menuBar()->clear();
+    if (index == 2)
+    {
+        QMenu *menu = menuBar()->addMenu("File(&F)");
+        menu->addAction("New", this, &MainWindow::dealNewAction);
+        menu->addAction("Open", this, &MainWindow::dealOpenAction);
+    }
+}

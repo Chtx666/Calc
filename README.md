@@ -54,14 +54,14 @@ Calc 仓库当前实际文件结构如下：
 
 
 Calc/
-├── .gitignore # Git 忽略文件
-├── Calc.pro # Qt 工程文件
-├── LICENSE # GPL-3.0 许可证
-├── README.md # 项目说明文档
-├── main.cpp # 程序入口
-├── mainwindow.h # 主窗口类声明
-├── mainwindow.cpp # 主窗口逻辑与功能实现
-└── mainwindow.ui # 主窗口 Qt Designer UI 文件
+├── .gitignore
+├── Calc.pro
+├── LICENSE 
+├── README.md 
+├── main.cpp 
+├── mainwindow.h 
+├── mainwindow.cpp
+└── mainwindow.ui 
 
 
 > 注意：虽然项目没有为各模块建立单独文件夹，但内部逻辑上区分了 **Calculator、Timer 和 Filer** 模块。

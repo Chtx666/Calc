@@ -1,51 +1,76 @@
 # Calc
 
-**Calc** 是一个基于 **Qt 6 / C++** 开发的跨平台桌面应用程序，集成了 **计算器（Calculator）** 与 **计时器（Timer）** 两个功能模块。  
-该项目旨在作为 Qt Widgets 应用的学习与实践示例，侧重于界面设计、事件驱动模型以及多功能模块在同一程序中的组织方式。
+Calc 是一个基于 **Qt 6 / C++** 开发的跨平台桌面应用程序，集成以下功能：
 
-项目仓库：  
-https://github.com/Chtx666/Calc
+- 🧮 **计算器（Calculator）**
+- ⏱ **计时器（Timer）**
+- 📄 **文件编辑器（Filer）** — 新增功能
 
----
+项目旨在展示 Qt Widgets 桌面应用开发，学习事件驱动机制和多模块功能在同一程序中的实现。  
 
-## ✨ 功能概述
-
-### Calculator（计算器）
-- 支持基本四则运算（加 / 减 / 乘 / 除）
-- 支持小数输入与计算
-- 结果实时显示
-- 逻辑实现清晰，便于理解与扩展
-
-### Timer（计时器）
-- 与计算器功能并存于同一应用中
-- 支持 **开始 / 暂停 / 重置**
-- 基于 Qt 定时器机制实现
-- 可用于简单计时、学习或专注辅助场景
-
-> 两个功能模块在逻辑与交互上相互独立，便于后续继续添加新功能模块。
+[项目地址](https://github.com/Chtx666/Calc)
 
 ---
 
-## 🧩 技术栈
+## 功能概览
 
-- **编程语言**：C++
-- **GUI 框架**：Qt 6（Qt Widgets）
-- **构建系统**：qmake
-- **开发环境**：Qt Creator
-- **测试平台**：
-  - Windows
-  - Linux（Fedora / KDE Plasma）
+### 🧮 Calculator（计算器）
+
+- 支持四则运算：加、减、乘、除  
+- 支持小数与括号运算  
+- 实时显示计算结果  
+- 异常输入处理（如连续符号、非法字符）
+
+### ⏱ Timer（计时器）
+
+- 提供 **开始 / 暂停 / 重置** 功能  
+- 基于 Qt 定时器实现  
+- 适合学习计时或专注练习
+
+### 📄 Filer（文件编辑器） — **新增功能**
+
+- 打开任意文本文件  
+- 编辑文件内容  
+- 保存修改后的文件  
+- 用户可自定义路径选择  
+
+> Filer 与 Calculator、Timer 在程序中平级共存，可通过菜单或按钮切换模块使用。
 
 ---
 
-## 📁 项目结构
+## 技术栈
 
-```text
+- **语言**：C++  
+- **GUI 框架**：Qt 6 (Qt Widgets)  
+- **构建系统**：qmake  
+- **开发环境**：Qt Creator  
+- **兼容平台**：Windows / Linux（如 Fedora / KDE）
+
+---
+
+## 项目结构
+
+Calc 仓库当前实际文件结构如下：
+
+
 Calc/
-├── Calc.pro              # Qt 项目配置文件
-├── main.cpp              # 程序入口
-├── mainwindow.h          # 主窗口类声明
-├── mainwindow.cpp        # 主窗口逻辑实现
-├── mainwindow.ui         # UI 布局文件（Qt Designer）
-├── LICENSE               # 开源许可证
-└── README.md             # 项目说明文档
+├── .gitignore # Git 忽略文件
+├── Calc.pro # Qt 工程文件
+├── LICENSE # GPL-3.0 许可证
+├── README.md # 项目说明文档
+├── main.cpp # 程序入口
+├── mainwindow.h # 主窗口类声明
+├── mainwindow.cpp # 主窗口逻辑与功能实现
+└── mainwindow.ui # 主窗口 Qt Designer UI 文件
+
+
+> 注意：虽然项目没有为各模块建立单独文件夹，但内部逻辑上区分了 **Calculator、Timer 和 Filer** 模块。
+
+---
+
+## 安装与使用
+
+### 克隆项目
+
+```bash
+git clone https://github.com/Chtx666/Calc.git

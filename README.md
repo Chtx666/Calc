@@ -54,14 +54,14 @@ Calc 仓库当前实际文件结构如下：
 
 
 Calc/
-├── .gitignore
-├── Calc.pro
-├── LICENSE 
-├── README.md 
-├── main.cpp 
-├── mainwindow.h 
-├── mainwindow.cpp
-└── mainwindow.ui 
+- ├── .gitignore
+- ├── Calc.pro
+- ├── LICENSE 
+- ├── README.md 
+- ├── main.cpp 
+- ├── mainwindow.h 
+- ├── mainwindow.cpp
+- └── mainwindow.ui 
 
 
 > 注意：虽然项目没有为各模块建立单独文件夹，但内部逻辑上区分了 **Calculator、Timer 和 Filer** 模块。

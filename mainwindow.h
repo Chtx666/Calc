@@ -83,6 +83,10 @@ private slots:
 
     void dealOpenAction();
 
+    void on_textEdit_textChanged();
+
+    void dealSaveAction();
+
 private:
     Ui::MainWindow *ui;
     QString expression;

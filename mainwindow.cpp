@@ -8,7 +8,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     this->setMaximumSize(490, 460);
     this->setMinimumSize(490, 460);
-    this->setWindowTitle("Calculator");
+    this->setWindowTitle("Calc");
     ui->minSpinBox->setRange(0, 59);
     ui->secSpinBox->setRange(0, 59);
     timer = new QTimer;
@@ -323,21 +323,57 @@ void MainWindow::on_pauseButton_clicked()
 
 void MainWindow::dealNewAction()
 {
+    QString s = ui->textEdit->toPlainText();
+    QString title = ui->filenameLabel->text();
+    if (!s.trimmed().isEmpty() && title[title.size() - 1] == '*')
+    {
+        QMessageBox::StandardButton reply = QMessageBox::warning(
+            this,
+            tr("Calc::Filer"),
+            tr("Please save the current file!!!"),
+            QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel,
+            QMessageBox::Save
+        );
+        if (reply == QMessageBox::Save)
+        {
+            // TODO
 
+        }
+        if (reply == QMessageBox::Discard)
+            goto CONTINUE;
+    }
+    else
+    {
+CONTINUE:
+        ui->filenameLabel->setText("*");
+        ui->textEdit->clear();
+    }
 }
 
 void MainWindow::dealOpenAction()
 {
-    QString filename = QFileDialog::getOpenFileName(this, tr("Open File"), QCoreApplication::applicationFilePath(), "*.*");
-    if (filename.isEmpty()) QMessageBox::warning(this, "Warning", "Please select a file!!!");
-    else
+    QString filename = QFileDialog::getOpenFileName(
+        this,
+        tr("Calc::Filer::OpenFile"),
+        QCoreApplication::applicationFilePath(),
+        "*.*"
+    );
+    if (filename.isEmpty())
     {
-        QFile file(filename);
-        file.open(QIODevice::ReadOnly);
-        QByteArray ba = file.readAll();
-        ui->textEdit->setText(QString(ba));
-        file.close();
+        QMessageBox::warning(this, "Calc::Filer", "Please select a file!!!");
+        return;
     }
+    QFileInfo fileInfo(filename);
+    ui->filenameLabel->setText(fileInfo.fileName());
+    QFile file(filename);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        QMessageBox::warning(this, "Calc::Filer", "Cannot open file!");
+        return;
+    }
+    QByteArray ba = file.readAll();
+    ui->textEdit->setText(QString(ba));
+    file.close();
 }
 
 void MainWindow::on_tabWidget_currentChanged(int index)
@@ -348,5 +384,41 @@ void MainWindow::on_tabWidget_currentChanged(int index)
         QMenu *menu = menuBar()->addMenu("File(&F)");
         menu->addAction("New", this, &MainWindow::dealNewAction);
         menu->addAction("Open", this, &MainWindow::dealOpenAction);
+        menu->addAction("Save", this, &MainWindow::dealSaveAction);
     }
+}
+
+void MainWindow::on_textEdit_textChanged()
+{
+    if (ui->filenameLabel->text().back() != "*")
+        ui->filenameLabel->setText(ui->filenameLabel->text() + "*");
+}
+
+void MainWindow::dealSaveAction()
+{
+    QString filename = QFileDialog::getSaveFileName(
+        this,
+        tr("Calc::Filer::SaveFile"),
+        QDir::homePath() + "default.txt",
+        tr("*.*")
+    );
+    if (filename.isEmpty())
+    {
+        QMessageBox::warning(this, "Calc::Filer", "Please select a file!!!");
+        return;
+    }
+    QFile file(filename);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        QMessageBox::warning(this, "Calc::Filer", "Cannot save file!");
+        return;
+    }
+    QString content = ui->textEdit->toPlainText();
+    QByteArray ba = content.toUtf8();
+    file.write(ba);
+    file.close();
+    QString text = ui->filenameLabel->text();
+    if (text[text.size() - 1] == '*')
+        text.chop(1);
+    ui->filenameLabel->setText(text);
 }

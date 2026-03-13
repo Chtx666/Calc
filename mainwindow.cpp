@@ -336,8 +336,7 @@ void MainWindow::dealNewAction()
         );
         if (reply == QMessageBox::Save)
         {
-            // TODO
-
+            MainWindow::dealSaveAction();
         }
         if (reply == QMessageBox::Discard)
             goto CONTINUE;
@@ -354,7 +353,7 @@ void MainWindow::dealOpenAction()
 {
     QString filename = QFileDialog::getOpenFileName(
         this,
-        tr("Calc::Filer::OpenFile"),
+        tr("Calc::Filer.OpenFile"),
         QCoreApplication::applicationFilePath(),
         "*.*"
     );

@@ -14,6 +14,8 @@
 #include <QMessageBox>
 #include <QMenuBar>
 #include <QFileDialog>
+#include <QTcpSocket>
+#include <QHostAddress>
 using namespace std;
 
 QT_BEGIN_NAMESPACE
@@ -87,9 +89,12 @@ private slots:
 
     void dealSaveAction();
 
+    void on_connectButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     QString expression;
     QTimer *timer;
+    QTcpSocket *socket;
 };
 #endif // MAINWINDOW_H

@@ -13,9 +13,10 @@ MainWindow::MainWindow(QWidget *parent)
     ui->secSpinBox->setRange(0, 59);
     timer = new QTimer;
     connect(timer, &QTimer::timeout, this, &MainWindow::timeoutSlot);
+    socket = new QTcpSocket;
     ui->minSpinBox->setMinimumWidth(145);
     ui->secSpinBox->setMinimumWidth(145);
-    on_tabWidget_currentChanged(2);
+    on_tabWidget_currentChanged(ui->tabWidget->currentIndex());
 }
 
 MainWindow::~MainWindow()
@@ -421,3 +422,9 @@ void MainWindow::dealSaveAction()
         text.chop(1);
     ui->filenameLabel->setText(text);
 }
+
+void MainWindow::on_connectButton_clicked()
+{
+    QString ip = ui->ipLineEdit->text();
+}
+

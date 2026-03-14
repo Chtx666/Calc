@@ -426,5 +426,8 @@ void MainWindow::dealSaveAction()
 void MainWindow::on_connectButton_clicked()
 {
     QString ip = ui->ipLineEdit->text();
+    QString port = ui->portLineEdit->text();
+    socket->connectToHost();
+
 }
 
